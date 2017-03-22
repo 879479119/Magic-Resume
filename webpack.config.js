@@ -4,7 +4,7 @@ const merge = require('webpack-merge')
 const HtmlPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-let devConfig = require('./webpack.dev.config')
+// let devConfig = require('./config/webpack.dev.config')
 
 let commonConfig = {
 	entry: {
@@ -24,18 +24,24 @@ let commonConfig = {
 	// postcss:[autoprefixer({browsers:['last 2 versions']})],
 	module: {
 		rules:[
-		{
-			test: /\.js$/,
-			loader: "",
-			exclude: /node_modules/
-		},
-		{
-			test: /\.scss$/,
-			loader: [ExtractTextPlugin.extract("style-loader","css-loader"),"sass-loader"]
-			// loader: "style!css!sass"
-		}
-	]},
+			{
+				test: /\.(gif|svg|png|webp|jpg|jpeg)$/,
+				loader: ['url-loader','image-loader']
+			},
+			{
+				test: /\.(scss|css|sass)$/,
+				loader: ExtractTextPlugin.extract({
+					fallback: 'style-loader',
+					use: ['css-loader','postcss-loader','sass-loader']
+				})
+			},
+		]
+	},
 	plugins: [
+		new ExtractTextPlugin({
+			filename: "style.css",
+			allChunks: true
+		}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: 'vendor'
 		}),
@@ -47,7 +53,6 @@ let commonConfig = {
 				postcss: [autoprefixer({browsers:['last 2 versions']})]
 			}
 		}),
-		new ExtractTextPlugin("styles.css"),
 		new webpack.DefinePlugin({
 			'process.env': {
 				NODE_ENV: '"production"'
@@ -58,8 +63,12 @@ let commonConfig = {
 
 let resultConfig = commonConfig
 
-if(process.env){
-	resultConfig = merge(commonConfig, devConfig)
-}
+// switch (process.env.npm_lifecycle_event){
+// 	case "start":
+// 		resultConfig = merge(commonConfig, devConfig)
+// 		break
+// 	case "build":
+// 		break
+// }
 
 module.exports = resultConfig

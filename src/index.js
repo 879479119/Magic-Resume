@@ -1,3 +1,6 @@
-import "main.scss"
-console.log(23333333);
+// require("./main.scss")
+// require("./demo.css")
+import './main.scss'
+import './demo.css'
+// require('assets/face.jpg')
 document.write('pdd')
